@@ -161,8 +161,7 @@ jobs:
           jq -e 'all(.[]; .result == "success")' <<< "$NEEDS" > /dev/null
 
   acceptance:
-    runs-on:
-      - ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         node:
@@ -179,6 +178,11 @@ jobs:
       - name: bundle install
         run: |
           bundle install
+      - name: Block Launchpad (test only)
+        run: |
+          for host in ppa.launchpadcontent.net ppa.launchpad.net api.launchpad.net launchpad.net keyserver.ubuntu.com; do
+            echo "0.0.0.0 ${host}" | sudo tee -a /etc/hosts
+          done
       - name: Setup libvirt for Vagrant
         uses: ./.github/actions/setup-vagrant-libvirt
       - name: beaker
